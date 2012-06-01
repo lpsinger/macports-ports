@@ -37,19 +37,20 @@ post-destroot {
     move ${destroot}${qt_plugins_dir}/designer/libphononwidgets.so \
         ${destroot}${qt_plugins_dir}/designer/libphononwidgets.dylib
 
+    # link major library version name
+
+    ln -s ${prefix}/lib/libphonon.dylib ${destroot}${prefix}/lib/libphonon.4.dylib
+    ln -s ${prefix}/lib/libphononexperimental.dylib ${destroot}${prefix}/lib/libphononexperimental.4.dylib
+
     # fix library and plugin self-names
 
-    foreach fixfile { lib/libphonon.dylib \
-                      lib/libphononexperimental.dylib  } {
-        system "install_name_tool -id ${prefix}/${fixfile} ${destroot}${prefix}/${fixfile}"
-    }
+    system "install_name_tool -id ${prefix}/lib/libphonon.4.dylib ${destroot}${prefix}/lib/libphonon.dylib"
+    system "install_name_tool -id ${prefix}/lib/libphononexperimental.4.dylib ${destroot}${prefix}/lib/libphononexperimental.dylib"
 
     # fix use of libphonon
 
-    foreach fixfile { lib/libphononexperimental.dylib \
-                      share/qt4/plugins/designer/libphononwidgets.dylib } {
-        system "install_name_tool -change lib/libphonon.4.dylib ${prefix}/lib/libphonon.4.dylib ${destroot}${prefix}/${fixfile}"
-    }
+    system "install_name_tool -change lib/libphonon.4.4.0.dylib ${prefix}/lib/libphonon.4.dylib ${destroot}${prefix}/lib/libphononexperimental.dylib"
+    system "install_name_tool -change lib/libphonon.4.4.0.dylib ${prefix}/lib/libphonon.4.dylib ${destroot}${prefix}/share/qt4/plugins/designer/libphononwidgets.dylib"
 
     # move odd cmake directory into the cmake module's directory
 
